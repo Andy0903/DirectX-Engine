@@ -2,6 +2,7 @@
 #define GRAPHICSCLASS_H
 
 #include <Windows.h>
+#include "Direct3DClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -12,15 +13,17 @@ class GraphicsClass
 {
 public:
 	GraphicsClass();
-	GraphicsClass(const GraphicsClass& aOther);
+	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
 
-	bool Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd);
+	bool Initialize(int, int, HWND);
 	void Shutdown();
 	bool Frame();
 
 private:
 	bool Render();
+
+	Direct3DClass *myDirect3D;
 };
 
 #endif;

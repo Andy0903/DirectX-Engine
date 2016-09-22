@@ -10,10 +10,10 @@ public:
 
 	void Initialize();
 
-	void KeyDown(unsigned int aInput);
-	void KeyUp(unsigned int aInput);
+	void KeyDown(unsigned int);
+	void KeyUp(unsigned int);
 
-	bool IsKeyDown(unsigned int aKey);
+	bool IsKeyDown(unsigned int);
 
 private:
 	bool myKeysDown[256];

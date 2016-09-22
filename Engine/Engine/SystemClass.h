@@ -24,14 +24,17 @@ private:
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 
-	LPCWSTR m_applicationName;
-	HINSTANCE m_hinstance;
-	HWND m_hwnd;
+	LPCWSTR myApplicationName;
+	HINSTANCE myHInstance;
+	HWND myHwnd;
 
-	InputClass* m_Input;
-	GraphicsClass* m_Graphics;
+	InputClass* myInput;
+	GraphicsClass* myGraphics;
+
+	const int myStandardScreenWidth;
+	const int myStandardScreenHeight;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-static SystemClass* ApplicationHandle = nullptr; //0
+static SystemClass* ApplicationHandle = nullptr;
 #endif

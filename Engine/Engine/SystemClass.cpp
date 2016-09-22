@@ -1,12 +1,12 @@
 #include "SystemClass.h"
 
-SystemClass::SystemClass()
+SystemClass::SystemClass() : myStandardScreenWidth(800), myStandardScreenHeight(600)
 {
-	m_Input = nullptr;
-	m_Graphics = nullptr;
+	myInput = nullptr;
+	myGraphics = nullptr;
 }
 
-SystemClass::SystemClass(const SystemClass& other)
+SystemClass::SystemClass(const SystemClass& aOther) : myStandardScreenWidth(800), myStandardScreenHeight(600)
 {
 }
 
@@ -25,120 +25,81 @@ bool SystemClass::Initalize()
 {
 	int screenWidth = 0;
 	int screenHeight = 0;
-	bool result;
-
 	InitializeWindows(screenWidth, screenHeight);
 
-	m_Input = new InputClass;
-	if (!m_Input)
-	{
-		return false;
-	}
-	m_Input->Initialize();
+	myInput = new InputClass;
+	myInput->Initialize();
 
-	m_Graphics = new GraphicsClass;
-	if (!m_Graphics)
-	{
-		return false;
-	}
-	result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
-
-	if (!result)	//Change all to return result bara.
-	{
-		return false;
-	}
-
-	return true;
+	myGraphics = new GraphicsClass;
+	return myGraphics->Initialize(screenWidth, screenHeight, myHwnd);
 }
 
 void SystemClass::Shutdown()
 {
-	if (m_Graphics)
+	if (myGraphics)
 	{
-		m_Graphics->Shutdown();
-		delete m_Graphics;
-		m_Graphics = nullptr; //0
+		myGraphics->Shutdown();
+		delete myGraphics;
+		myGraphics = nullptr;
 	}
 
-	if (m_Input)
+	if (myInput)
 	{
-		delete m_Input;
-		m_Input = nullptr; //0
+		delete myInput;
+		myInput = nullptr;
 	}
 
 	ShutdownWindows();
-
-	//return;
 }
 
 void SystemClass::Run()
 {
 	MSG msg;
-	bool done;
-	bool result;
+	bool done = false;
 
-	SecureZeroMemory(&msg, sizeof(MSG)); //--Secure
+	SecureZeroMemory(&msg, sizeof(MSG));
 
-	done = false;
 	while (!done)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 
-		if (msg.message == WM_QUIT)
+		if (msg.message == WM_QUIT || !Frame())
 		{
 			done = true;
 		}
-		else
-		{
-			result = Frame();
-			if (!result)
-			{
-				done = true;
-			}
-		}
 	}
-
-	//return;
 }
 
 bool SystemClass::Frame()
 {
-	bool result;
-
-	if (m_Input->IsKeyDown(VK_ESCAPE))
+	if (myInput->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
 	}
 
-	result = m_Graphics->Frame();
-	if (!result)
-	{
-		return false; ////
-	}
-
-	return true;	//ta bara return result.
+	return myGraphics->Frame();
 }
 
-LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK SystemClass::MessageHandler(HWND aHwnd, UINT aUmessage, WPARAM aWparam, LPARAM aLparam)
 {
-	switch (umsg)
+	switch (aUmessage)
 	{
 	case WM_KEYDOWN:
-		m_Input->KeyDown((unsigned int)wparam);
+		myInput->KeyDown((unsigned int)aWparam);
 		return 0;
 	case WM_KEYUP:
-		m_Input->KeyUp((unsigned int)wparam);
+		myInput->KeyUp((unsigned int)aWparam);
 		return 0;
 	default:
-		return DefWindowProc(hwnd, umsg, wparam, lparam);
+		return DefWindowProc(aHwnd, aUmessage, aWparam, aLparam);
 	}
 }
 
-void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
+void SystemClass::InitializeWindows(int& aScreenWidth, int& aScreenHeight)
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
@@ -146,35 +107,33 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	int posY;
 
 	ApplicationHandle = this;
-
-	m_hinstance = GetModuleHandle(NULL);
-
-	m_applicationName = L"Engine";
+	myHInstance = GetModuleHandle(nullptr);
+	myApplicationName = L"Engine";
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.hInstance = m_hinstance;
-	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	wc.hInstance = myHInstance;
+	wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
 	wc.hIconSm = wc.hIcon;
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = m_applicationName;
+	wc.lpszMenuName = nullptr;
+	wc.lpszClassName = myApplicationName;
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	RegisterClassEx(&wc);
 
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	aScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+	aScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	if (FULL_SCREEN)
 	{
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmPelsWidth = (unsigned long)aScreenWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)aScreenHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -185,24 +144,24 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	}
 	else
 	{
-		screenWidth = 800;
-		screenHeight = 600;
+		aScreenWidth = myStandardScreenWidth;
+		aScreenHeight = myStandardScreenHeight;
 
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		posX = (GetSystemMetrics(SM_CXSCREEN) - aScreenWidth) / 2;
+		posY = (GetSystemMetrics(SM_CYSCREEN) - aScreenHeight) / 2;
 	}
 
-	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
+	myHwnd = CreateWindowEx
+		(WS_EX_APPWINDOW, myApplicationName, myApplicationName,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-		posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
+		posX, posY, aScreenWidth, aScreenHeight,
+			nullptr, nullptr, myHInstance, nullptr);
 
-	ShowWindow(m_hwnd, SW_SHOW);
-	SetForegroundWindow(m_hwnd);
-	SetFocus(m_hwnd);
+	ShowWindow(myHwnd, SW_SHOW);
+	SetForegroundWindow(myHwnd);
+	SetFocus(myHwnd);
 
 	ShowCursor(false);
-
-	//return;
 }
 
 void SystemClass::ShutdownWindows()
@@ -211,31 +170,25 @@ void SystemClass::ShutdownWindows()
 
 	if (FULL_SCREEN)
 	{
-		ChangeDisplaySettings(NULL, 0);
+		ChangeDisplaySettings(nullptr, 0);
 	}
 
-	DestroyWindow(m_hwnd);
-	m_hwnd = NULL;
+	DestroyWindow(myHwnd);
+	myHwnd = nullptr;
 
-	UnregisterClass(m_applicationName, m_hinstance);
-	m_hinstance = NULL;
+	UnregisterClass(myApplicationName, myHInstance);
+	myHInstance = nullptr;
 
-	ApplicationHandle = nullptr; //NULL
-
-	//return;
+	ApplicationHandle = nullptr;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc(HWND aHwnd, UINT aUmessage, WPARAM aWparam, LPARAM aLparam)
 {
-	switch (umessage)		//TOG BORT {} ur alla cases
+	if (aUmessage == WM_DESTROY || aUmessage == WM_CLOSE)
 	{
-	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
-	case WM_CLOSE:
-		PostQuitMessage(0);
-		return 0;
-	default:
-		return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 	}
+
+	return ApplicationHandle->MessageHandler(aHwnd, aUmessage, aWparam, aLparam);
 }
