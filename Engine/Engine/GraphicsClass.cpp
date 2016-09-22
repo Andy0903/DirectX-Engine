@@ -44,7 +44,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render()
 {
-	myDirect3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	myDirect3D->BeginScene(1.0f, 1.0f, 0.0f, 1.0f);
 
 	myDirect3D->EndScene();
 	return true;
