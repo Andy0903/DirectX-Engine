@@ -25,6 +25,7 @@ private:
 		D3DXVECTOR3 position;
 		//D3DXVECTOR4 color;
 		D3DXVECTOR2 texture;
+		D3DXVECTOR3 normal;
 	};
 
 	bool InitializeBuffers(ID3D11Device*);

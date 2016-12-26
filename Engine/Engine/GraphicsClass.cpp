@@ -6,7 +6,9 @@ GraphicsClass::GraphicsClass()
 	myCamera = nullptr;
 	myModel = nullptr;
 	//myColorShader = nullptr;
-	myTextureShader = nullptr;
+	//myTextureShader = nullptr;
+	myLightShader = nullptr;
+	myLight = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -35,7 +37,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 
 	myModel = new ModelClass;
 	WCHAR* searchPath = L"../Engine/Textures/seafloor.dds";//HÄR
-	result = myModel->Initialize(myDirect3D->GetDevice(), searchPath); 
+	result = myModel->Initialize(myDirect3D->GetDevice(), searchPath);
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -50,7 +52,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 		return result;
 	}*/
 
-	myTextureShader = new TextureShaderClass;
+	/*myTextureShader = new TextureShaderClass;
 	if (myTextureShader == false)
 	{
 		return false;
@@ -60,7 +62,29 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	{
 		MessageBox(aHwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
+	}*/
+
+	myLightShader = new LightShaderClass;
+	if (!myLightShader)
+	{
+		return false;
 	}
+
+	result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (result == false)
+	{
+		MessageBox(aHwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	myLight = new LightClass;
+	if (!myLight)
+	{
+		return false;
+	}
+
+	myLight->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	myLight->SetDirection(0.0f, 0.0f, 1.0f);
 
 	return true;
 }
@@ -74,11 +98,24 @@ void GraphicsClass::Shutdown()
 	//	myColorShader = nullptr;
 	//}
 
-	if (myTextureShader)
+	//if (myTextureShader)
+	//{
+	//	myTextureShader->Shutdown();
+	//	delete myTextureShader;
+	//	myTextureShader = nullptr;
+	//}
+
+	if (myLight)
 	{
-		myTextureShader->Shutdown();
-		delete myTextureShader;
-		myTextureShader = nullptr;
+		delete myLight;
+		myLight = nullptr;
+	}
+
+	if (myLightShader)
+	{
+		myLightShader->Shutdown();
+		delete myLightShader;
+		myLightShader = nullptr;
 	}
 
 	if (myModel)
@@ -104,10 +141,19 @@ void GraphicsClass::Shutdown()
 
 bool GraphicsClass::Frame()
 {
-	return Render();
+	bool result;
+	static float rotation = 0.0f;
+	rotation += (float)D3DX_PI * 0.01f;
+	if (rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
+	result = Render(rotation);
+	return result;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float aRotation)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
 	bool result;
@@ -119,13 +165,20 @@ bool GraphicsClass::Render()
 	myDirect3D->GetWorldMatrix(worldMatrix);
 	myDirect3D->GetProjectionMatrix(projectionMatrix);
 
+	D3DXMatrixRotationY(&worldMatrix, aRotation);
 	myModel->Render(myDirect3D->GetDeviceContext());
 
-//	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-	
-	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(),
-		worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
+	//	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	//	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
+
+	result = myLightShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
+		viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetDiffuseColor());
+
+	if (!result)
+	{
+		return false;
+	}
 
 	myDirect3D->EndScene();
-	return result;
+	return true;
 }
