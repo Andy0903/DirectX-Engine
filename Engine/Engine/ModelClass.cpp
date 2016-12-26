@@ -79,7 +79,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* aDevice)
 	vertices[2].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
 
-	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f); //Klarade inte denna assignmenten (5.2)
+	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f); //Klarade inte denna assignmenten (5.3)
 	vertices[3].texture = D3DXVECTOR2(0.5f, 0.5f);
 
 	//vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);
