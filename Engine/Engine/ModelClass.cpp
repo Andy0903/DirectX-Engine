@@ -55,8 +55,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* aDevice)
 	D3D11_SUBRESOURCE_DATA indexData;
 	HRESULT result;
 
-	myVertexCount = 6;
-	myIndexCount = 6;
+	myVertexCount = 3;
+	myIndexCount = 3;
 
 	vertices = new VertexType[myVertexCount];
 	indices = new unsigned long[myIndexCount];
@@ -79,24 +79,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device* aDevice)
 	vertices[2].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
 
-	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f); //Klarade inte denna assignmenten (5.3)
-	vertices[3].texture = D3DXVECTOR2(0.5f, 0.5f);
-
-	//vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);
-	//vertices[3].color = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-
 	indices[0] = 0;
 	indices[1] = 1;
 	indices[2] = 2;
-
-	indices[3] = 0;
-	indices[4] = 2;
-	indices[5] = 3;
-
-	/*indices[3] = 0;
-	indices[4] = 2;
-	indices[5] = 3;*/
-
+	
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexType) * myVertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;

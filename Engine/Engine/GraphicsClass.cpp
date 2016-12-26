@@ -31,7 +31,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	}
 
 	myCamera = new CameraClass;
-	myCamera->SetPosition(0.0f, 0.0f, -10.0f);
+	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	myModel = new ModelClass;
 	WCHAR* searchPath = L"../Engine/Textures/seafloor.dds";//HÄR
