@@ -5,7 +5,8 @@ GraphicsClass::GraphicsClass()
 	myDirect3D = nullptr;
 	myCamera = nullptr;
 	myModel = nullptr;
-	myColorShader = nullptr;
+	//myColorShader = nullptr;
+	myTextureShader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -16,6 +17,7 @@ GraphicsClass::~GraphicsClass()
 {
 }
 
+//Distance
 bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 {
 	bool result;
@@ -29,22 +31,35 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	}
 
 	myCamera = new CameraClass;
-	myCamera->SetPosition(0.0f, 0.0f, -20.0f);
+	myCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	myModel = new ModelClass;
-	result = myModel->Initialize(myDirect3D->GetDevice());
+	WCHAR* searchPath = L"../Engine/Textures/seafloor.dds";//HÄR
+	result = myModel->Initialize(myDirect3D->GetDevice(), searchPath); 
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return result;
 	}
 
-	myColorShader = new ColorShaderClass;
+	/*myColorShader = new ColorShaderClass;
 	result = myColorShader->Initialize(myDirect3D->GetDevice(), aHwnd);
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
 		return result;
+	}*/
+
+	myTextureShader = new TextureShaderClass;
+	if (myTextureShader == false)
+	{
+		return false;
+	}
+	result = myTextureShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		return false;
 	}
 
 	return true;
@@ -52,11 +67,18 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 
 void GraphicsClass::Shutdown()
 {
-	if (myColorShader)
+	//if (myColorShader)
+	//{
+	//	myColorShader->Shutdown();
+	//	delete myColorShader;
+	//	myColorShader = nullptr;
+	//}
+
+	if (myTextureShader)
 	{
-		myColorShader->Shutdown();
-		delete myColorShader;
-		myColorShader = nullptr;
+		myTextureShader->Shutdown();
+		delete myTextureShader;
+		myTextureShader = nullptr;
 	}
 
 	if (myModel)
@@ -99,7 +121,10 @@ bool GraphicsClass::Render()
 
 	myModel->Render(myDirect3D->GetDeviceContext());
 
-	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+//	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	
+	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(),
+		worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
 
 	myDirect3D->EndScene();
 	return result;
