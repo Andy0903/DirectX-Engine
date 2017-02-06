@@ -36,7 +36,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	myModel = new ModelClass;
-	char* modelPath = "../Engine/Models/Sphere.txt";
+	char* modelPath = "../Engine/Models/Cube.txt";
 	WCHAR* texturePath = L"../Engine/Textures/seafloor.dds";
 	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, texturePath);
 	if (!result)
@@ -77,7 +77,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 
 	myLight = new LightClass;
 	if (!myLight) { return false; }
-
+	myLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	myLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	myLight->SetDirection(0.0f, 0.0f, 1.0f);
 
@@ -138,7 +138,7 @@ bool GraphicsClass::Frame()
 {
 	bool result;
 	static float rotation = 0.0f;
-	rotation += (float)D3DX_PI * 0.01f;
+	rotation += (float)D3DX_PI * 0.005f;
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -166,8 +166,9 @@ bool GraphicsClass::Render(float aRotation)
 	//	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	//	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
 
+	// Render the model using the light shader.
 	result = myLightShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
-		viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetDiffuseColor());
+		viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetAmbientColor(), myLight->GetDiffuseColor());
 
 	if (!result)
 	{

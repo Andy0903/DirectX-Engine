@@ -30,12 +30,12 @@ void LightShaderClass::Shutdown()
 
 bool LightShaderClass::Render(ID3D11DeviceContext *aDeviceContext, int aIndexCount, D3DXMATRIX aWorldMatrix,
 	D3DXMATRIX aViewMatrix, D3DXMATRIX aProjectionMatrix, ID3D11ShaderResourceView* aTexture, D3DXVECTOR3 aLightDirection,
-	D3DXVECTOR4 aDiffuseColor)
+	D3DXVECTOR4 aAmbientColor, D3DXVECTOR4 aDiffuseColor)
 {
 	bool result;
 
 	result = SetShaderParameters(aDeviceContext, aWorldMatrix, aViewMatrix,
-		aProjectionMatrix, aTexture, aLightDirection, aDiffuseColor);
+		aProjectionMatrix, aTexture, aLightDirection, aAmbientColor, aDiffuseColor);
 	if (result == false)
 	{
 		return false;
@@ -262,7 +262,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob *aErrorMessage, HWND 
 
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* aDeviceContext, D3DXMATRIX aWorldMatrix,
 	D3DXMATRIX aViewMatrix, D3DXMATRIX aProjectionMatrix, ID3D11ShaderResourceView* aTexture,
-	D3DXVECTOR3 aLightDirection, D3DXVECTOR4 aDiffuseColor)
+	D3DXVECTOR3 aLightDirection, D3DXVECTOR4 aAmbientColor, D3DXVECTOR4 aDiffuseColor)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -298,6 +298,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* aDeviceContext, 
 	}
 
 	lightData = (LightBufferType*)mappedResource.pData;
+	lightData->ambientColor = aAmbientColor;
 	lightData->diffuseColor = aDiffuseColor;
 	lightData->lightDirection = aLightDirection;
 	lightData->padding = 0.0f;
