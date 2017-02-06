@@ -48,7 +48,7 @@ int ModelClass::GetIndexCount()
 	return myIndexCount;
 }
 
-//Drawing Triangle
+//Drawing Triangle OUTDATES
 bool ModelClass::InitializeBuffers(ID3D11Device* aDevice)
 {
 	VertexType* vertices;

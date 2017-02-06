@@ -36,7 +36,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	myModel = new ModelClass;
-	char* modelPath = "../Engine/Models/Cube.txt";
+	char* modelPath = "../Engine/Models/Sphere.txt";
 	WCHAR* texturePath = L"../Engine/Textures/seafloor.dds";
 	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, texturePath);
 	if (!result)
