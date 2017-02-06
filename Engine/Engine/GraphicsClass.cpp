@@ -36,8 +36,9 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	myModel = new ModelClass;
-	WCHAR* searchPath = L"../Engine/Textures/seafloor.dds";//HÄR
-	result = myModel->Initialize(myDirect3D->GetDevice(), searchPath);
+	char* modelPath = "../Engine/Models/Cube.txt";
+	WCHAR* texturePath = L"../Engine/Textures/seafloor.dds";
+	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, texturePath);
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -65,10 +66,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	}*/
 
 	myLightShader = new LightShaderClass;
-	if (!myLightShader)
-	{
-		return false;
-	}
+	if (!myLightShader) { return false; }
 
 	result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
 	if (result == false)
@@ -78,12 +76,9 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 	}
 
 	myLight = new LightClass;
-	if (!myLight)
-	{
-		return false;
-	}
+	if (!myLight) { return false; }
 
-	myLight->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	myLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	myLight->SetDirection(0.0f, 0.0f, 1.0f);
 
 	return true;

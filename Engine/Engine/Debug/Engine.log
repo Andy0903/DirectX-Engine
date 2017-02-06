@@ -55,5 +55,6 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: see previous definition of 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': macro redefinition
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: see previous definition of 'D3D10_ERROR_FILE_NOT_FOUND'
+f:\io-bound counter\directx-engine\engine\engine\modelclass.h(7): warning C4067: unexpected tokens following preprocessor directive - expected a newline
   Engine.vcxproj -> F:\IO-Bound counter\DirectX-Engine\Engine\Debug\Engine.exe
   Engine.vcxproj -> F:\IO-Bound counter\DirectX-Engine\Engine\Debug\Engine.pdb (Full PDB)
