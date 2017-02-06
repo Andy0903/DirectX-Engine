@@ -136,7 +136,7 @@ void GraphicsClass::Shutdown()
 	}
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int aMouseX, int aMouseY)
 {
 	bool result;
 	static float rotation = 0.0f;
@@ -145,8 +145,10 @@ bool GraphicsClass::Frame()
 	{
 		rotation -= 360.0f;
 	}
-
 	result = Render(rotation);
+
+	myCamera->SetPosition(0.0f, 0.0f, -10.0f);
+
 	return result;
 }
 

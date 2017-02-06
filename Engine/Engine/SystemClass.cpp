@@ -23,15 +23,24 @@ SystemClass::~SystemClass()
 
 bool SystemClass::Initalize()
 {
-	int screenWidth = 0;
-	int screenHeight = 0;
+	int screenWidth = 0, screenHeight = 0;
+	bool result;
+
 	InitializeWindows(screenWidth, screenHeight);
 
 	myInput = new InputClass;
-	myInput->Initialize();
+	result = myInput->Initialize(myHInstance, myHwnd, screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(myHwnd, L"Could not initialize the input object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	myGraphics = new GraphicsClass;
-	return myGraphics->Initialize(screenWidth, screenHeight, myHwnd);
+	result = myGraphics->Initialize(screenWidth, screenHeight, myHwnd);
+
+	return result;
 }
 
 void SystemClass::Shutdown()
@@ -45,6 +54,7 @@ void SystemClass::Shutdown()
 
 	if (myInput)
 	{
+		myInput->Shutdown();
 		delete myInput;
 		myInput = nullptr;
 	}
@@ -67,36 +77,37 @@ void SystemClass::Run()
 			DispatchMessage(&msg);
 		}
 
-		if (msg.message == WM_QUIT || !Frame())
+		if (msg.message == WM_QUIT || myInput->IsEscapePressed())
 		{
 			done = true;
+		}
+		else
+		{
+			if (Frame() == false)
+			{
+				MessageBox(myHwnd, L"Frame Processing Failed", L"Error", MB_OK);
+				done = true;
+			}
 		}
 	}
 }
 
 bool SystemClass::Frame()
 {
-	if (myInput->IsKeyDown(VK_ESCAPE))
-	{
-		return false;
-	}
+	int mouseX, mouseY;
+	bool result;
 
-	return myGraphics->Frame();
+	result = myInput->Frame();
+	if (result == false) { return false; }
+	myInput->GetMouseLocation(mouseX, mouseY);
+
+	result = myGraphics->Frame(mouseX, mouseY);
+	return result;
 }
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND aHwnd, UINT aUmessage, WPARAM aWparam, LPARAM aLparam)
 {
-	switch (aUmessage)
-	{
-	case WM_KEYDOWN:
-		myInput->KeyDown((unsigned int)aWparam);
-		return 0;
-	case WM_KEYUP:
-		myInput->KeyUp((unsigned int)aWparam);
-		return 0;
-	default:
-		return DefWindowProc(aHwnd, aUmessage, aWparam, aLparam);
-	}
+	return DefWindowProc(aHwnd, aUmessage, aWparam, aLparam);
 }
 
 void SystemClass::InitializeWindows(int& aScreenWidth, int& aScreenHeight)
@@ -152,10 +163,10 @@ void SystemClass::InitializeWindows(int& aScreenWidth, int& aScreenHeight)
 	}
 
 	myHwnd = CreateWindowEx
-		(WS_EX_APPWINDOW, myApplicationName, myApplicationName,
+	(WS_EX_APPWINDOW, myApplicationName, myApplicationName,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 		posX, posY, aScreenWidth, aScreenHeight,
-			nullptr, nullptr, myHInstance, nullptr);
+		nullptr, nullptr, myHInstance, nullptr);
 
 	ShowWindow(myHwnd, SW_SHOW);
 	SetForegroundWindow(myHwnd);
