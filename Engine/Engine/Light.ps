@@ -26,6 +26,9 @@ float4 LightPixelShader(PixelInputType aInput) : SV_TARGET
     float4 color;
     float3 reflection;
     float4 specular;
+    
+    //aInput.tex.xy *= 4;
+
 
     // Sample the pixel color from the texture using the sampler at this texture coordinate location.
     textureColor = shaderTexture.Sample(SampleType, aInput.tex);
@@ -55,9 +58,9 @@ float4 LightPixelShader(PixelInputType aInput) : SV_TARGET
     }
 	 
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
-    color = color * textureColor;
+   
+    color = color * textureColor; //////Part 3.1 
 
     color = saturate(color + specular);
-
     return color;
 }

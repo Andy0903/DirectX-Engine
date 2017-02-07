@@ -42,7 +42,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 
 	myModel = new ModelClass;
 	char* modelPath = "../Engine/Models/Sphere.txt";
-	WCHAR* texturePath = L"../Engine/Textures/Red.dds";
+	WCHAR* texturePath = L"../Engine/Textures/Brick.dds";
 	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, texturePath);
 	if (!result)
 	{
