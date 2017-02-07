@@ -28,6 +28,17 @@ public:
 	bool Frame(int, int, float);
 
 private:
+	bool Render(float);
+
+	Direct3DClass *myDirect3D;
+	CameraClass *myCamera;
+	ModelClass *myModel;
+	//ColorShaderClass *myColorShader;
+	//TextureShaderClass *myTextureShader;
+	LightShaderClass *myLightShader;
+	LightClass *myLight;
+
+	///FPSMovement
 	enum Direction
 	{
 		Right,
@@ -37,19 +48,9 @@ private:
 	};
 	bool DragsWithMouse(Direction aDirection);
 	void HandleInput(float aDt);
-
-	bool Render(float);
-
 	PositionClass* myPosition;
 	InputClass* myInput;
-	Direct3DClass *myDirect3D;
-	CameraClass *myCamera;
-	ModelClass *myModel;
-	//ColorShaderClass *myColorShader;
-
-	//TextureShaderClass *myTextureShader;
-	LightShaderClass *myLightShader;
-	LightClass *myLight;
+	///
 };
 
 #endif;
