@@ -8,6 +8,8 @@
 #include "TextureShaderClass.h"
 #include "LightShaderClass.h"
 #include "LightClass.h"
+#include "InputClass.h"
+#include "PositionClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -21,13 +23,25 @@ public:
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
 
-	bool Initialize(int, int, HWND);
+	bool Initialize(int, int, HWND, InputClass*);
 	void Shutdown();
-	bool Frame(int, int);
+	bool Frame(int, int, float);
 
 private:
+	enum Direction
+	{
+		Right,
+		Left,
+		Up,
+		Down
+	};
+	bool DragsWithMouse(Direction aDirection);
+	void HandleInput(float aDt);
+
 	bool Render(float);
 
+	PositionClass* myPosition;
+	InputClass* myInput;
 	Direct3DClass *myDirect3D;
 	CameraClass *myCamera;
 	ModelClass *myModel;

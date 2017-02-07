@@ -117,7 +117,7 @@ bool InputClass::ReadKeyboard()
 bool InputClass::ReadMouse()
 {
 	HRESULT result;
-
+	myPrevMouseState = myMouseState;
 	result = myMouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&myMouseState);
 	if (FAILED(result))
 	{
@@ -145,10 +145,10 @@ void InputClass::ProcessInput()
 	if (myMouseY > myScreenHeight) { myMouseY = myScreenHeight; }
 }
 
-bool InputClass::IsEscapePressed()
+bool InputClass::IsKeyPressed(int aDIKCode)
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
-	if (myKeyboardState[DIK_ESCAPE] & 0x80) { return true; }
+	if (myKeyboardState[aDIKCode] & 0x80) { return true; }
 
 	return false;
 }
@@ -157,4 +157,14 @@ void InputClass::GetMouseLocation(int& aOutX, int& aOutY)
 {
 	aOutX = myMouseX;
 	aOutY = myMouseY;
+}
+
+float InputClass::GetMouseDeltaX()
+{
+	return myMouseState.lX;
+}
+
+float InputClass::GetMouseDeltaY()
+{
+	return myMouseState.lY;
 }

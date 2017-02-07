@@ -9,6 +9,7 @@ GraphicsClass::GraphicsClass()
 	//myTextureShader = nullptr;
 	myLightShader = nullptr;
 	myLight = nullptr;
+	myPosition = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -20,9 +21,10 @@ GraphicsClass::~GraphicsClass()
 }
 
 //Distance
-bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
+bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, InputClass *aInput)
 {
 	bool result;
+	myInput = aInput;
 
 	myDirect3D = new Direct3DClass;
 	result = myDirect3D->Initialize(aScreenWidth, aScreenHeight, VSYNC_ENABLED, aHwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
@@ -34,6 +36,9 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd)
 
 	myCamera = new CameraClass;
 	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
+
+	myPosition = new PositionClass();
+	myPosition->SetPosition(myCamera->GetPosition().x, myCamera->GetPosition().y, myCamera->GetPosition().z);
 
 	myModel = new ModelClass;
 	char* modelPath = "../Engine/Models/Sphere.txt";
@@ -102,6 +107,12 @@ void GraphicsClass::Shutdown()
 	//	myTextureShader = nullptr;
 	//}
 
+	if (myPosition)
+	{
+		delete myPosition;
+		myPosition = nullptr;
+	}
+
 	if (myLight)
 	{
 		delete myLight;
@@ -136,7 +147,22 @@ void GraphicsClass::Shutdown()
 	}
 }
 
-bool GraphicsClass::Frame(int aMouseX, int aMouseY)
+bool GraphicsClass::DragsWithMouse(Direction aDirection)
+{
+	switch (aDirection)
+	{
+	case Direction::Left:
+		return (myInput->GetMouseDeltaX() < -5);
+	case Direction::Right:
+		return (myInput->GetMouseDeltaX() > 5);
+	case Direction::Up:
+		return (myInput->GetMouseDeltaY() < -5);
+	case Direction::Down:
+		return (myInput->GetMouseDeltaY() > 5);
+	}
+}
+
+bool GraphicsClass::Frame(int aMouseX, int aMouseY, float aDt)
 {
 	bool result;
 	static float rotation = 0.0f;
@@ -147,9 +173,35 @@ bool GraphicsClass::Frame(int aMouseX, int aMouseY)
 	}
 	result = Render(rotation);
 
-	myCamera->SetPosition(0.0f, 0.0f, -10.0f);
+	HandleInput(aDt);
 
 	return result;
+}
+
+void GraphicsClass::HandleInput(float aDt)
+{
+	bool keyDown, result;
+	float posX, posY, posZ, rotX, rotY, rotZ;
+
+	if (DragsWithMouse(Direction::Up)) { myPosition->LookUpward(aDt); }
+	if (DragsWithMouse(Direction::Down)) { myPosition->LookDownward(aDt); }
+	if (DragsWithMouse(Direction::Left)) { myPosition->TurnLeft(aDt); }
+	if (DragsWithMouse(Direction::Right)) { myPosition->TurnRight(aDt); }
+
+	if (myInput->IsKeyPressed(DIK_D)) { myPosition->MoveRight(aDt); }
+	if (myInput->IsKeyPressed(DIK_A)) { myPosition->MoveLeft(aDt); }
+	if (myInput->IsKeyPressed(DIK_W)) { myPosition->MoveForward(aDt); }
+	if (myInput->IsKeyPressed(DIK_S)) { myPosition->MoveBackward(aDt); }
+	if (myInput->IsKeyPressed(DIK_Q)) { myPosition->MoveUpward(aDt); }
+	if (myInput->IsKeyPressed(DIK_E)) { myPosition->MoveDownward(aDt); }
+
+	// Get the view point position/rotation.
+	myPosition->GetPosition(posX, posY, posZ);
+	myPosition->GetRotation(rotX, rotY, rotZ);
+
+	// Set the position of the camera.
+	myCamera->SetPosition(posX, posY, posZ);
+	myCamera->SetRotation(rotX, rotY, rotZ);
 }
 
 bool GraphicsClass::Render(float aRotation)

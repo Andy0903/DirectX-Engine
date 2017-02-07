@@ -1,8 +1,19 @@
-#ifndef CAMERACLASS_H
-#define CAMERACLASS_H
+////////////////////////////////////////////////////////////////////////////////
+// Filename: cameraclass.h
+////////////////////////////////////////////////////////////////////////////////
+#ifndef _CAMERACLASS_H_
+#define _CAMERACLASS_H_
 
+
+//////////////
+// INCLUDES //
+//////////////
 #include <d3dx10math.h>
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Class name: CameraClass
+////////////////////////////////////////////////////////////////////////////////
 class CameraClass
 {
 public:
@@ -20,17 +31,9 @@ public:
 	void GetViewMatrix(D3DXMATRIX&);
 
 private:
-	float myPositionX;
-	float myPositionY;
-	float myPositionZ;
-
-	float myRotationX;
-	float myRotationY;
-	float myRotationZ;
-
-	D3DXMATRIX myViewMatrix;
-
-	float ToRadians(float);
+	float m_positionX, m_positionY, m_positionZ;
+	float m_rotationX, m_rotationY, m_rotationZ;
+	D3DXMATRIX m_viewMatrix;
 };
 
 #endif

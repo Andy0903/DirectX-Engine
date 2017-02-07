@@ -38,7 +38,7 @@ bool SystemClass::Initalize()
 
 
 	myGraphics = new GraphicsClass;
-	result = myGraphics->Initialize(screenWidth, screenHeight, myHwnd);
+	result = myGraphics->Initialize(screenWidth, screenHeight, myHwnd, myInput);
 
 	return result;
 }
@@ -69,6 +69,13 @@ void SystemClass::Run()
 
 	SecureZeroMemory(&msg, sizeof(MSG));
 
+	__int64 cntsPerSec = 0;
+	QueryPerformanceFrequency((LARGE_INTEGER*)&cntsPerSec);
+	float secsPerCnt = 1.0f / (float)cntsPerSec;
+
+	__int64 prevTimeStamp = 0;
+	QueryPerformanceCounter((LARGE_INTEGER*)&prevTimeStamp);
+
 	while (!done)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -77,13 +84,18 @@ void SystemClass::Run()
 			DispatchMessage(&msg);
 		}
 
-		if (msg.message == WM_QUIT || myInput->IsEscapePressed())
+		if (msg.message == WM_QUIT || myInput->IsKeyPressed(DIK_ESCAPE))
 		{
 			done = true;
 		}
 		else
 		{
-			if (Frame() == false)
+			_int64 currTimeStamp = 0;
+			QueryPerformanceCounter((LARGE_INTEGER*)&currTimeStamp);
+			float dt = (currTimeStamp - prevTimeStamp) * secsPerCnt;
+
+			prevTimeStamp = currTimeStamp;
+			if (Frame(dt) == false)
 			{
 				MessageBox(myHwnd, L"Frame Processing Failed", L"Error", MB_OK);
 				done = true;
@@ -92,7 +104,7 @@ void SystemClass::Run()
 	}
 }
 
-bool SystemClass::Frame()
+bool SystemClass::Frame(float aDt)
 {
 	int mouseX, mouseY;
 	bool result;
@@ -101,7 +113,7 @@ bool SystemClass::Frame()
 	if (result == false) { return false; }
 	myInput->GetMouseLocation(mouseX, mouseY);
 
-	result = myGraphics->Frame(mouseX, mouseY);
+	result = myGraphics->Frame(mouseX, mouseY, aDt);
 	return result;
 }
 

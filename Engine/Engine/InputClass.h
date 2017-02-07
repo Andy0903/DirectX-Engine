@@ -18,8 +18,10 @@ public:
 	void Shutdown();
 	bool Frame();
 
-	bool IsEscapePressed();
+	bool IsKeyPressed(int);
 	void GetMouseLocation(int&, int&);
+	float GetMouseDeltaX();
+	float GetMouseDeltaY();
 
 private:
 	bool ReadKeyboard();
@@ -31,7 +33,7 @@ private:
 	IDirectInputDevice8* myMouse;
 
 	unsigned char myKeyboardState[256];
-	DIMOUSESTATE myMouseState;
+	DIMOUSESTATE myMouseState, myPrevMouseState;
 
 	int myScreenWidth, myScreenHeight;
 	int myMouseX, myMouseY;
