@@ -25,5 +25,6 @@
 
 # Executables
 *.exe
+!DXSDK_Jun10.exe
 *.out
 *.app
