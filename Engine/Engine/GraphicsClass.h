@@ -10,6 +10,7 @@
 #include "LightClass.h"
 #include "InputClass.h"
 #include "PositionClass.h"
+#include "BumpMapShaderClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -35,7 +36,8 @@ private:
 	ModelClass *myModel;
 	//ColorShaderClass *myColorShader;
 	//TextureShaderClass *myTextureShader;
-	LightShaderClass *myLightShader;
+	//LightShaderClass *myLightShader;
+	BumpMapShaderClass *myBumpMapShader;
 	LightClass *myLight;
 
 	///FPSMovement

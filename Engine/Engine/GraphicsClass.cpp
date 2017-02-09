@@ -7,7 +7,8 @@ GraphicsClass::GraphicsClass()
 	myModel = nullptr;
 	//myColorShader = nullptr;
 	//myTextureShader = nullptr;
-	myLightShader = nullptr;
+	//myLightShader = nullptr;
+	myBumpMapShader = nullptr;
 	myLight = nullptr;
 	myPosition = nullptr;
 }
@@ -20,7 +21,6 @@ GraphicsClass::~GraphicsClass()
 {
 }
 
-//Distance
 bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, InputClass *aInput)
 {
 	bool result;
@@ -41,9 +41,10 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	myPosition->SetPosition(myCamera->GetPosition().x, myCamera->GetPosition().y, myCamera->GetPosition().z);
 
 	myModel = new ModelClass;
-	char* modelPath = "../Engine/Models/Sphere.txt";
-	WCHAR* texturePath = L"../Engine/Textures/Brick.dds";
-	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, texturePath);
+	char* modelPath = "../Engine/Models/Cube.txt";
+	WCHAR* textureColorPath = L"../Engine/Textures/Brick.dds";
+	WCHAR* textureBumpPath = L"../Engine/Textures/BrickBump.dds";
+	result = myModel->Initialize(myDirect3D->GetDevice(), modelPath, textureColorPath, textureBumpPath);
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -70,21 +71,30 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 		return false;
 	}*/
 
-	myLightShader = new LightShaderClass;
-	if (!myLightShader) { return false; }
+	//myLightShader = new LightShaderClass;
+	//if (!myLightShader) { return false; }
+	//result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	//if (result == false)
+	//{
+	//	MessageBox(aHwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
-	result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	myBumpMapShader = new BumpMapShaderClass;
+	result = myBumpMapShader->Initialize(myDirect3D->GetDevice(), aHwnd);
 	if (result == false)
 	{
-		MessageBox(aHwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		MessageBox(aHwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+
 
 	myLight = new LightClass;
 	if (!myLight) { return false; }
 	myLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	myLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myLight->SetDirection(1.0f, 0.0f, 1.0f);
+	myLight->SetDirection(0.0f, 0.0f, 1.0f);
 	myLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	myLight->SetSpecularPower(32.0f);
 
@@ -107,6 +117,20 @@ void GraphicsClass::Shutdown()
 	//	myTextureShader = nullptr;
 	//}
 
+	//if (myLightShader)
+	//{
+	//	myLightShader->Shutdown();
+	//	delete myLightShader;
+	//	myLightShader = nullptr;
+	//}
+
+	if (myBumpMapShader)
+	{
+		myBumpMapShader->Shutdown();
+		delete myBumpMapShader;
+		myBumpMapShader = nullptr;
+	}
+
 	if (myPosition)
 	{
 		delete myPosition;
@@ -117,13 +141,6 @@ void GraphicsClass::Shutdown()
 	{
 		delete myLight;
 		myLight = nullptr;
-	}
-
-	if (myLightShader)
-	{
-		myLightShader->Shutdown();
-		delete myLightShader;
-		myLightShader = nullptr;
 	}
 
 	if (myModel)
@@ -223,9 +240,13 @@ bool GraphicsClass::Render(float aRotation)
 	//	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
 
 	// Render the model using the light shader.
-	result = myLightShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
-		viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetAmbientColor(), myLight->GetDiffuseColor(),
-		myCamera->GetPosition(), myLight->GetSpecularColor(), myLight->GetSpecularPower());
+	//result = myLightShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
+	//	viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetAmbientColor(), myLight->GetDiffuseColor(),
+	//	myCamera->GetPosition(), myLight->GetSpecularColor(), myLight->GetSpecularPower());
+
+	//Render the model using the bump map shader.
+	result = myBumpMapShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
+		viewMatrix, projectionMatrix, myModel->GetTextureArray(), myLight->GetDirection(), myLight->GetDiffuseColor());
 
 	if (!result)
 	{

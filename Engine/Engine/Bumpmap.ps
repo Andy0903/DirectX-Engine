@@ -1,0 +1,51 @@
+Texture2D shaderTextures[2];
+SamplerState SampleType;
+
+cbuffer LightBuffer
+{
+    float4 diffuseColor;
+    float3 lightDirection;
+};
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+};
+
+float4 BumpMapPixelShader(PixelInputType aInput) : SV_TARGET
+{
+    float4 textureColor;
+    float4 bumpMap;
+    float3 bumpNormal;
+    float3 lightDir;
+    float lightIntensity;
+    float4 color;
+    
+    // Sample the texture pixel at this location.
+    textureColor = shaderTextures[0].Sample(SampleType, aInput.tex);
+    // Sample the pixel in the bump map.
+    bumpMap = shaderTextures[1].Sample(SampleType, aInput.tex);
+    // Extends range to of the normal value to (-1, +1)
+    bumpMap = (bumpMap * 2.0f) - 1.0f;
+
+    // Calc TBN (New normal with regard of normal map)
+    bumpNormal = (bumpMap.x * aInput.tangent) + (bumpMap.y * aInput.binormal) + (bumpMap.z * aInput.normal);
+    bumpNormal = normalize(bumpNormal);
+
+    // Invert the light direction for calcs.
+    lightDir = -lightDirection;
+    // Calculate the amount of light on this pixel.
+    lightIntensity = saturate(dot(bumpNormal, lightDir));
+
+    // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+    color = saturate(diffuseColor * lightIntensity);
+	 
+    // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+    color = color * textureColor;
+
+    return color;
+}
