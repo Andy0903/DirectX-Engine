@@ -272,7 +272,9 @@ bool GraphicsClass::Render(float aRotation)
 	result = myBitmap->Render(myDirect3D->GetDeviceContext(), 100, 100);
 	if (result == false) { return false; }
 
-	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), unrotatedWorldMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
+	D3DXMATRIX rotMatrix;
+	myCamera->GetRotationMatrix(rotMatrix);
+	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), unrotatedWorldMatrix * rotMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
 	if (result == false) { return false; }
 
 	myDirect3D->TurnZBufferOn();
