@@ -33,21 +33,26 @@ public:
 
 	void GetVideoCardInfo(char*, int&);
 
+	void TurnZBufferOn();
+	void TurnZBufferOff();
+
 private:
 	bool myVsyncEnabled;
 	int myVideoCardMemory;
 	char myVideoCardDescription[128];
-	IDXGISwapChain* mySwapChain;
-	ID3D11Device* myDevice;
-	ID3D11DeviceContext* myDeviceContext;
-	ID3D11RenderTargetView* myRenderTargetView;
-	ID3D11Texture2D* myDepthStencilBuffer;
-	ID3D11DepthStencilState* myDepthStencilState;
-	ID3D11DepthStencilView* myDepthStencilView;
-	ID3D11RasterizerState* myRasterState;
+	IDXGISwapChain *mySwapChain;
+	ID3D11Device *myDevice;
+	ID3D11DeviceContext *myDeviceContext;
+	ID3D11RenderTargetView *myRenderTargetView;
+	ID3D11Texture2D *myDepthStencilBuffer;
+	ID3D11DepthStencilState *myDepthStencilState;
+	ID3D11DepthStencilView *myDepthStencilView;
+	ID3D11RasterizerState *myRasterState;
 	D3DXMATRIX myProjectionMatrix;
 	D3DXMATRIX myWorldMatrix;
 	D3DXMATRIX myOrthoMatrix;
+
+	ID3D11DepthStencilState *myDepthDisabledStencilState;
 };
 
 #endif

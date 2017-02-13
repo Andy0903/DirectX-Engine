@@ -11,6 +11,7 @@
 #include "InputClass.h"
 #include "PositionClass.h"
 #include "BumpMapShaderClass.h"
+#include "BitMapClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -35,10 +36,11 @@ private:
 	CameraClass *myCamera;
 	ModelClass *myModel;
 	//ColorShaderClass *myColorShader;
-	//TextureShaderClass *myTextureShader;
+	TextureShaderClass *myTextureShader;
 	//LightShaderClass *myLightShader;
 	BumpMapShaderClass *myBumpMapShader;
 	LightClass *myLight;
+	BitmapClass *myBitmap;
 
 	///FPSMovement
 	enum Direction

@@ -10,6 +10,7 @@ Direct3DClass::Direct3DClass()
 	myDepthStencilState = nullptr;
 	myDepthStencilView = nullptr;
 	myRasterState = nullptr;
+	myDepthDisabledStencilState = nullptr;
 }
 
 Direct3DClass::Direct3DClass(const Direct3DClass& aOther)
@@ -43,6 +44,7 @@ bool Direct3DClass::Initialize(int aScreenWidth, int aScreenHeight, bool aVsync,
 	D3D11_VIEWPORT viewport;
 	float fieldOfView;
 	float screenAspect;
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 
 	myVsyncEnabled = aVsync;
 
@@ -232,14 +234,41 @@ bool Direct3DClass::Initialize(int aScreenWidth, int aScreenHeight, bool aVsync,
 	D3DXMatrixIdentity(&myWorldMatrix);
 	D3DXMatrixOrthoLH(&myOrthoMatrix, (float)aScreenWidth, (float)aScreenHeight, aScreenNear, aScreenDepth);
 
+	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
+	depthDisabledStencilDesc.DepthEnable = false;
+	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthDisabledStencilDesc.StencilEnable = true;
+	depthDisabledStencilDesc.StencilReadMask = 0xFF;
+	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
+	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create the state using the device.
+	result = myDevice->CreateDepthStencilState(&depthDisabledStencilDesc, &myDepthDisabledStencilState);
+	if (FAILED(result)) { return false; }
+
 	return true;
 }
 
 void Direct3DClass::Shutdown()
 {
+	//Needs to be on windowed before release, else throws exception.
 	if (mySwapChain)
 	{
 		mySwapChain->SetFullscreenState(false, nullptr);
+	}
+
+	if (myDepthDisabledStencilState)
+	{
+		myDepthDisabledStencilState->Release();
+		myDepthDisabledStencilState = nullptr;
 	}
 
 	if (myRasterState)
@@ -335,4 +364,15 @@ void Direct3DClass::GetVideoCardInfo(char* aCardName, int& aMemory)
 {
 	strcpy_s(aCardName, 128, myVideoCardDescription);
 	aMemory = myVideoCardMemory;
+}
+
+void Direct3DClass::TurnZBufferOn()
+{
+	myDeviceContext->OMSetDepthStencilState(myDepthStencilState, 1);
+}
+
+
+void Direct3DClass::TurnZBufferOff()
+{
+	myDeviceContext->OMSetDepthStencilState(myDepthDisabledStencilState, 1);
 }

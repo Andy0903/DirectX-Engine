@@ -6,11 +6,12 @@ GraphicsClass::GraphicsClass()
 	myCamera = nullptr;
 	myModel = nullptr;
 	//myColorShader = nullptr;
-	//myTextureShader = nullptr;
+	myTextureShader = nullptr;
 	//myLightShader = nullptr;
 	myBumpMapShader = nullptr;
 	myLight = nullptr;
 	myPosition = nullptr;
+	myBitmap = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -59,7 +60,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 		return result;
 	}*/
 
-	/*myTextureShader = new TextureShaderClass;
+	myTextureShader = new TextureShaderClass;
 	if (myTextureShader == false)
 	{
 		return false;
@@ -69,7 +70,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	{
 		MessageBox(aHwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
-	}*/
+	}
 
 	//myLightShader = new LightShaderClass;
 	//if (!myLightShader) { return false; }
@@ -88,8 +89,6 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 		return false;
 	}
 
-
-
 	myLight = new LightClass;
 	if (!myLight) { return false; }
 	myLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
@@ -97,6 +96,14 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	myLight->SetDirection(0.0f, 0.0f, 1.0f);
 	myLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	myLight->SetSpecularPower(32.0f);
+
+	myBitmap = new BitmapClass;
+	result = myBitmap->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, L"../Engine/Textures/Red.dds", 256, 256);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
 
 	return true;
 }
@@ -110,12 +117,12 @@ void GraphicsClass::Shutdown()
 	//	myColorShader = nullptr;
 	//}
 
-	//if (myTextureShader)
-	//{
-	//	myTextureShader->Shutdown();
-	//	delete myTextureShader;
-	//	myTextureShader = nullptr;
-	//}
+	if (myTextureShader)
+	{
+		myTextureShader->Shutdown();
+		delete myTextureShader;
+		myTextureShader = nullptr;
+	}
 
 	//if (myLightShader)
 	//{
@@ -123,6 +130,13 @@ void GraphicsClass::Shutdown()
 	//	delete myLightShader;
 	//	myLightShader = nullptr;
 	//}
+
+	if (myBitmap)
+	{
+		myBitmap->Shutdown();
+		delete myBitmap;
+		myBitmap = nullptr;
+	}
 
 	if (myBumpMapShader)
 	{
@@ -223,7 +237,7 @@ void GraphicsClass::HandleInput(float aDt)
 
 bool GraphicsClass::Render(float aRotation)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
 	bool result;
 
 	myDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -232,6 +246,8 @@ bool GraphicsClass::Render(float aRotation)
 	myCamera->GetViewMatrix(viewMatrix);
 	myDirect3D->GetWorldMatrix(worldMatrix);
 	myDirect3D->GetProjectionMatrix(projectionMatrix);
+
+	myDirect3D->GetOrthoMatrix(orthoMatrix);
 
 	D3DXMatrixRotationY(&worldMatrix, aRotation);
 	myModel->Render(myDirect3D->GetDeviceContext());
@@ -248,10 +264,16 @@ bool GraphicsClass::Render(float aRotation)
 	result = myBumpMapShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
 		viewMatrix, projectionMatrix, myModel->GetTextureArray(), myLight->GetDirection(), myLight->GetDiffuseColor());
 
-	if (!result)
-	{
-		return false;
-	}
+	if (!result) { return false; }
+
+	myDirect3D->TurnZBufferOff();
+
+	result = myBitmap->Render(myDirect3D->GetDeviceContext(), 100, 100);
+	if (result == false) { return false; }
+	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
+	if (result == false) { return false; }
+
+	myDirect3D->TurnZBufferOn();
 
 	myDirect3D->EndScene();
 	return true;
