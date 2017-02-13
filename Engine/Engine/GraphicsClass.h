@@ -12,6 +12,8 @@
 #include "PositionClass.h"
 #include "BumpMapShaderClass.h"
 #include "BitMapClass.h"
+#include "DebugWindowClass.h"
+#include "RenderTextureClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -28,9 +30,11 @@ public:
 	bool Initialize(int, int, HWND, InputClass*);
 	void Shutdown();
 	bool Frame(int, int, float);
+	bool Render();
 
 private:
-	bool Render(float);
+	bool RenderScene();
+	bool RenderToTexture();
 
 	Direct3DClass *myDirect3D;
 	CameraClass *myCamera;
@@ -40,7 +44,7 @@ private:
 	//LightShaderClass *myLightShader;
 	BumpMapShaderClass *myBumpMapShader;
 	LightClass *myLight;
-	BitmapClass *myBitmap;
+	//BitmapClass *myBitmap;
 
 	///FPSMovement
 	enum Direction
@@ -52,8 +56,10 @@ private:
 	};
 	bool DragsWithMouse(Direction aDirection);
 	void HandleInput(float aDt);
-	PositionClass* myPosition;
-	InputClass* myInput;
+	PositionClass *myPosition;
+	InputClass *myInput;
+	RenderTextureClass *myRenderTexture;
+	DebugWindowClass *myDebugWindow;
 	///
 };
 

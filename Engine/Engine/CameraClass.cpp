@@ -100,3 +100,8 @@ void CameraClass::GetRotationMatrix(D3DXMATRIX& aRotMatrix)
 {
 	aRotMatrix = myRotationMatrix;
 }
+
+void CameraClass::GetRotationMatrixInverse(D3DXMATRIX& aMatrix)
+{
+	D3DXMatrixInverse(&aMatrix, 0, &myRotationMatrix);
+}

@@ -11,6 +11,8 @@ Direct3DClass::Direct3DClass()
 	myDepthStencilView = nullptr;
 	myRasterState = nullptr;
 	myDepthDisabledStencilState = nullptr;
+	myAlphaEnableBlendingState = nullptr;
+	myAlphaDisableBlendingState = nullptr;
 }
 
 Direct3DClass::Direct3DClass(const Direct3DClass& aOther)
@@ -375,4 +377,15 @@ void Direct3DClass::TurnZBufferOn()
 void Direct3DClass::TurnZBufferOff()
 {
 	myDeviceContext->OMSetDepthStencilState(myDepthDisabledStencilState, 1);
+}
+
+ID3D11DepthStencilView* Direct3DClass::GetDepthStencilView()
+{
+	return myDepthStencilView;
+}
+
+void Direct3DClass::SetBackBufferRenderTarget()
+{
+	// Bind the render target view and depth stencil buffer to the output render pipeline.
+	myDeviceContext->OMSetRenderTargets(1, &myRenderTargetView, myDepthStencilView);
 }

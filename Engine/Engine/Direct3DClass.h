@@ -36,6 +36,9 @@ public:
 	void TurnZBufferOn();
 	void TurnZBufferOff();
 
+	ID3D11DepthStencilView* GetDepthStencilView();
+	void SetBackBufferRenderTarget();
+
 private:
 	bool myVsyncEnabled;
 	int myVideoCardMemory;
@@ -53,6 +56,8 @@ private:
 	D3DXMATRIX myOrthoMatrix;
 
 	ID3D11DepthStencilState *myDepthDisabledStencilState;
+	ID3D11BlendState *myAlphaEnableBlendingState;
+	ID3D11BlendState *myAlphaDisableBlendingState;
 };
 
 #endif

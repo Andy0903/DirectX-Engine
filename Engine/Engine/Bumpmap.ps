@@ -47,5 +47,6 @@ float4 BumpMapPixelShader(PixelInputType aInput) : SV_TARGET
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
     color = color * textureColor;
 
+    //return float4(bumpNormal, 1);
     return color;
 }

@@ -11,7 +11,7 @@ GraphicsClass::GraphicsClass()
 	myBumpMapShader = nullptr;
 	myLight = nullptr;
 	myPosition = nullptr;
-	myBitmap = nullptr;
+	//myBitmap = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -97,13 +97,26 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	myLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	myLight->SetSpecularPower(32.0f);
 
-	myBitmap = new BitmapClass;
-	result = myBitmap->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, L"../Engine/Textures/Red.dds", 256, 256);
+	//myBitmap = new BitmapClass;
+	//result = myBitmap->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, L"../Engine/Textures/Red.dds", 256, 256);
+	//if (!result)
+	//{
+	//	MessageBox(aHwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+	//	return false;
+	//}
+
+	myRenderTexture = new RenderTextureClass;
+	result = myRenderTexture->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight);
+	if (!result) { return false; }
+
+	myDebugWindow = new DebugWindowClass;
+	result = myDebugWindow->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, 160, 120);
 	if (!result)
 	{
-		MessageBox(aHwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(aHwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
 		return false;
 	}
+
 
 	return true;
 }
@@ -124,6 +137,20 @@ void GraphicsClass::Shutdown()
 		myTextureShader = nullptr;
 	}
 
+	if (myDebugWindow)
+	{
+		myDebugWindow->Shutdown();
+		delete myDebugWindow;
+		myDebugWindow = nullptr;
+	}
+
+	if (myRenderTexture)
+	{
+		myRenderTexture->Shutdown();
+		delete myRenderTexture;
+		myRenderTexture = nullptr;
+	}
+
 	//if (myLightShader)
 	//{
 	//	myLightShader->Shutdown();
@@ -131,12 +158,12 @@ void GraphicsClass::Shutdown()
 	//	myLightShader = nullptr;
 	//}
 
-	if (myBitmap)
-	{
-		myBitmap->Shutdown();
-		delete myBitmap;
-		myBitmap = nullptr;
-	}
+	//if (myBitmap)
+	//{
+	//	myBitmap->Shutdown();
+	//	delete myBitmap;
+	//	myBitmap = nullptr;
+	//}
 
 	if (myBumpMapShader)
 	{
@@ -196,17 +223,11 @@ bool GraphicsClass::DragsWithMouse(Direction aDirection)
 bool GraphicsClass::Frame(int aMouseX, int aMouseY, float aDt)
 {
 	bool result;
-	static float rotation = 0.0f;
-	rotation += (float)D3DX_PI * 0.005f;
-	if (rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
-	result = Render(rotation);
 
+	result = Render();
 	HandleInput(aDt);
 
-	return result;
+	return true;
 }
 
 void GraphicsClass::HandleInput(float aDt)
@@ -235,23 +256,35 @@ void GraphicsClass::HandleInput(float aDt)
 	myCamera->SetRotation(rotX, rotY, rotZ);
 }
 
-bool GraphicsClass::Render(float aRotation)
+bool GraphicsClass::Render()
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix, unrotatedWorldMatrix;
 	bool result;
 
+	result = RenderToTexture();
+	if (!result) { return false; }
+
 	myDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-	myCamera->Render();
+	result = RenderScene();
+	if (!result) { return false; }
 
-	myCamera->GetViewMatrix(viewMatrix);
+	myDirect3D->TurnZBufferOff();
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	myDirect3D->GetProjectionMatrix(projectionMatrix);
-
+	myCamera->GetViewMatrix(viewMatrix);
 	myDirect3D->GetOrthoMatrix(orthoMatrix);
-	myDirect3D->GetWorldMatrix(unrotatedWorldMatrix);
 
-	D3DXMatrixRotationY(&worldMatrix, aRotation);
-	myModel->Render(myDirect3D->GetDeviceContext());
+	result = myDebugWindow->Render(myDirect3D->GetDeviceContext(), 50, 50);
+	if (!result) { return false; }
+
+
+	D3DXMATRIX rot;
+	myCamera->GetRotationMatrix(rot);
+
+	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myDebugWindow->GetIndexCount(), worldMatrix * rot, viewMatrix,
+		orthoMatrix, myRenderTexture->GetShaderResourceView());
+	if (!result) { return false; }
+
+	myDirect3D->TurnZBufferOn();
 
 	//	result = myColorShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	//	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, myModel->GetTexture());
@@ -261,24 +294,65 @@ bool GraphicsClass::Render(float aRotation)
 	//	viewMatrix, projectionMatrix, myModel->GetTexture(), myLight->GetDirection(), myLight->GetAmbientColor(), myLight->GetDiffuseColor(),
 	//	myCamera->GetPosition(), myLight->GetSpecularColor(), myLight->GetSpecularPower());
 
-	//Render the model using the bump map shader.
-	result = myBumpMapShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
-		viewMatrix, projectionMatrix, myModel->GetTextureArray(), myLight->GetDirection(), myLight->GetDiffuseColor());
+	//result = myBitmap->Render(myDirect3D->GetDeviceContext(), 100, 100);
+	//if (result == false) { return false; }
 
-	if (!result) { return false; }
-
-	myDirect3D->TurnZBufferOff();
-
-	result = myBitmap->Render(myDirect3D->GetDeviceContext(), 100, 100);
-	if (result == false) { return false; }
-
-	D3DXMATRIX rotMatrix;
-	myCamera->GetRotationMatrix(rotMatrix);
-	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), unrotatedWorldMatrix * rotMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
-	if (result == false) { return false; }
-
-	myDirect3D->TurnZBufferOn();
+	//D3DXMATRIX rotMatrix;
+	//myCamera->GetRotationMatrix(rotMatrix);
+	//result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), unrotatedWorldMatrix * rotMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
+	//if (result == false) { return false; }
 
 	myDirect3D->EndScene();
 	return true;
+}
+
+bool GraphicsClass::RenderToTexture()
+{
+	bool result;
+
+	// Set the render target to be the render to texture.
+	myRenderTexture->SetRenderTarget(myDirect3D->GetDeviceContext(), myDirect3D->GetDepthStencilView());
+	// Clear the render to texture.
+	myRenderTexture->ClearRenderTarget(myDirect3D->GetDeviceContext(), myDirect3D->GetDepthStencilView(), 0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Render the scene now and it will draw to the render to texture instead of the back buffer.
+	result = RenderScene();
+	if (!result) { return false; }
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	myDirect3D->SetBackBufferRenderTarget();
+}
+
+bool GraphicsClass::RenderScene()
+{
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	bool result;
+	static float rotation = 0.0f;
+
+
+	// Generate the view matrix based on the camera's position.
+	myCamera->Render();
+
+	// Get the world, view, and projection matrices from the camera and d3d objects.
+	myDirect3D->GetWorldMatrix(worldMatrix);
+	myCamera->GetViewMatrix(viewMatrix);
+	myDirect3D->GetProjectionMatrix(projectionMatrix);
+
+	// Update the rotation variable each frame.
+	rotation += (float)D3DX_PI * 0.002f;
+	if (rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
+	D3DXMatrixRotationY(&worldMatrix, rotation);
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	myModel->Render(myDirect3D->GetDeviceContext());
+
+	//Render the model using the bump map shader.
+	result = myBumpMapShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix,
+		viewMatrix, projectionMatrix, myModel->GetTextureArray(), myLight->GetDirection(), myLight->GetDiffuseColor());
+	if (!result) { return false; }
+
 }
