@@ -237,7 +237,7 @@ void GraphicsClass::HandleInput(float aDt)
 
 bool GraphicsClass::Render(float aRotation)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix, unrotatedWorldMatrix;
 	bool result;
 
 	myDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -248,6 +248,7 @@ bool GraphicsClass::Render(float aRotation)
 	myDirect3D->GetProjectionMatrix(projectionMatrix);
 
 	myDirect3D->GetOrthoMatrix(orthoMatrix);
+	myDirect3D->GetWorldMatrix(unrotatedWorldMatrix);
 
 	D3DXMatrixRotationY(&worldMatrix, aRotation);
 	myModel->Render(myDirect3D->GetDeviceContext());
@@ -270,7 +271,8 @@ bool GraphicsClass::Render(float aRotation)
 
 	result = myBitmap->Render(myDirect3D->GetDeviceContext(), 100, 100);
 	if (result == false) { return false; }
-	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
+
+	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myBitmap->GetIndexCount(), unrotatedWorldMatrix, viewMatrix, orthoMatrix, myBitmap->GetTexture());
 	if (result == false) { return false; }
 
 	myDirect3D->TurnZBufferOn();
