@@ -442,8 +442,10 @@ bool GraphicsClass::RenderScene()
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	myModel->Render(myDirect3D->GetDeviceContext());
 	// Render the model with the texture shader.
-	result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix,
-		projectionMatrix, myModel->GetTextureArray()[0]);
+	//result = myTextureShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix,
+	//	projectionMatrix, myModel->GetTextureArray()[0]);
+	result = myBumpMapShader->Render(myDirect3D->GetDeviceContext(), myModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		myModel->GetTextureArray(), myLight->GetDirection(), myLight->GetDiffuseColor());
 	if (!result) { return false; }
 
 	// Get the world matrix again and translate down for the floor model to render underneath the cube.
