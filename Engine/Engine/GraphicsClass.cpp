@@ -15,6 +15,7 @@ GraphicsClass::GraphicsClass()
 	myReflectionShader = nullptr;
 	myRenderTexture = nullptr;
 	myFloorModel = nullptr;
+	myDepthShader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -39,7 +40,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	}
 
 	myCamera = new CameraClass;
-	myCamera->SetPosition(0.0f, 0.0f, -5.0f);
+	myCamera->SetPosition(0.0f, 2.0f, -10.0f);
 
 	myPosition = new PositionClass();
 	myPosition->SetPosition(myCamera->GetPosition().x, myCamera->GetPosition().y, myCamera->GetPosition().z);
@@ -130,23 +131,45 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 		return false;
 	}
 
-	// Create the reflection shader object.
-	myReflectionShader = new ReflectionShaderClass;
-	if (!myReflectionShader) { return false; }
+	//// Create the reflection shader object.
+	//myReflectionShader = new ReflectionShaderClass;
+	//if (!myReflectionShader) { return false; }
+	//// Initialize the reflection shader object.
+	//result = myReflectionShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	//if (!result)
+	//{
+	//	MessageBox(aHwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
-	// Initialize the reflection shader object.
-	result = myReflectionShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	if (!result)
+	// Create the depth shader object.
+	myDepthShader = new DepthShaderClass;
+	if (!myDepthShader)
 	{
-		MessageBox(aHwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Initialize the depth shader object.
+	result = myDepthShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the depth shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
+	if (myDepthShader)
+	{
+		myDepthShader->Shutdown();
+		delete myDepthShader;
+		myDepthShader = nullptr;
+	}
+
 	if (myReflectionShader)
 	{
 		myReflectionShader->Shutdown();
@@ -298,11 +321,34 @@ bool GraphicsClass::Render()
 {
 	bool result;
 	// Render the entire scene as a reflection to the texture first.
-	result = RenderToTexture();
-	if (!result) { return false; }
+	//result = RenderToTexture();
+	//if (!result) { return false; }
 	// Render the scene as normal to the back buffer.
-	result = RenderScene();
+	//result = RenderScene();
+	//if (!result) { return false; }
+
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+
+	// Clear the buffers to begin the scene.
+	myDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Generate the view matrix based on the camera's position.
+	myCamera->Render();
+
+	// Get the world, view, and projection matrices from the camera and d3d objects.
+	myCamera->GetViewMatrix(viewMatrix);
+	myDirect3D->GetWorldMatrix(worldMatrix);
+	myDirect3D->GetProjectionMatrix(projectionMatrix);
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	myFloorModel->Render(myDirect3D->GetDeviceContext());
+
+	// Render the model using the depth shader.
+	result = myDepthShader->Render(myDirect3D->GetDeviceContext(), myFloorModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	if (!result) { return false; }
+
+	// Present the rendered scene to the screen.
+	myDirect3D->EndScene();
 
 	return true;
 

@@ -15,11 +15,12 @@
 #include "DebugWindowClass.h"
 #include "RenderTextureClass.h"
 #include "reflectionshaderclass.h"
+#include "DepthShaderClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
-const float SCREEN_DEPTH = 1000.0f;
-const float SCREEN_NEAR = 0.1f;
+const float SCREEN_DEPTH = 100.0f; //1000
+const float SCREEN_NEAR = 1.0f; //0.1
 
 class GraphicsClass
 {
@@ -50,6 +51,7 @@ private:
 	ModelClass *myFloorModel;
 	ReflectionShaderClass *myReflectionShader;
 	//DebugWindowClass *myDebugWindow;
+	DepthShaderClass *myDepthShader;
 
 	///FPSMovement
 	enum Direction

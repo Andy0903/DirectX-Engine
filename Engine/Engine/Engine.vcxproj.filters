@@ -75,6 +75,9 @@
     <ClCompile Include="ReflectionShaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DepthShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -134,6 +137,9 @@
     <ClInclude Include="ReflectionShaderClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DepthShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc">
@@ -169,6 +175,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="Reflection.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Depth.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Depth.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
