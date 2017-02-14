@@ -72,6 +72,9 @@
     <ClCompile Include="DebugWindowClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectionShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -128,6 +131,9 @@
     <ClInclude Include="DebugWindowClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReflectionShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc">
@@ -157,6 +163,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="Bumpmap.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Reflection.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Reflection.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -14,6 +14,7 @@
 #include "BitMapClass.h"
 #include "DebugWindowClass.h"
 #include "RenderTextureClass.h"
+#include "reflectionshaderclass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -45,6 +46,10 @@ private:
 	BumpMapShaderClass *myBumpMapShader;
 	LightClass *myLight;
 	//BitmapClass *myBitmap;
+	RenderTextureClass *myRenderTexture;
+	ModelClass *myFloorModel;
+	ReflectionShaderClass *myReflectionShader;
+	//DebugWindowClass *myDebugWindow;
 
 	///FPSMovement
 	enum Direction
@@ -58,8 +63,6 @@ private:
 	void HandleInput(float aDt);
 	PositionClass *myPosition;
 	InputClass *myInput;
-	RenderTextureClass *myRenderTexture;
-	DebugWindowClass *myDebugWindow;
 	///
 };
 
