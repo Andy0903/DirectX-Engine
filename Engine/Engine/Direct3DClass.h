@@ -36,6 +36,8 @@ public:
 	void TurnZBufferOn();
 	void TurnZBufferOff();
 
+	void ResetViewport();
+
 	ID3D11DepthStencilView* GetDepthStencilView();
 	void SetBackBufferRenderTarget();
 
@@ -58,6 +60,8 @@ private:
 	ID3D11DepthStencilState *myDepthDisabledStencilState;
 	ID3D11BlendState *myAlphaEnableBlendingState;
 	ID3D11BlendState *myAlphaDisableBlendingState;
+
+	D3D11_VIEWPORT myViewport;
 };
 
 #endif

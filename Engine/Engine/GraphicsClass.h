@@ -16,11 +16,15 @@
 #include "RenderTextureClass.h"
 #include "reflectionshaderclass.h"
 #include "DepthShaderClass.h"
+#include "ShadowShaderClass.h"
 
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = false; //true
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 100.0f; //1000
 const float SCREEN_NEAR = 1.0f; //0.1
+
+const int SHADOWMAP_WIDTH = 1024;
+const int SHADOWMAP_HEIGHT = 1024;
 
 class GraphicsClass
 {
@@ -36,11 +40,13 @@ public:
 
 private:
 	bool RenderScene();
-	bool RenderToTexture();
+	bool RenderSceneToTexture();
 
 	Direct3DClass *myDirect3D;
 	CameraClass *myCamera;
-	ModelClass *myModel;
+	ModelClass *myCube;
+	ModelClass *mySphere;
+	ModelClass *myGround;
 	//ColorShaderClass *myColorShader;
 	TextureShaderClass *myTextureShader;
 	//LightShaderClass *myLightShader;
@@ -48,10 +54,10 @@ private:
 	LightClass *myLight;
 	//BitmapClass *myBitmap;
 	RenderTextureClass *myRenderTexture;
-	ModelClass *myFloorModel;
-	ReflectionShaderClass *myReflectionShader;
+	//ReflectionShaderClass *myReflectionShader;
 	//DebugWindowClass *myDebugWindow;
 	DepthShaderClass *myDepthShader;
+	ShadowShaderClass *myShadowShader;
 
 	///FPSMovement
 	enum Direction

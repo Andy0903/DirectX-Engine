@@ -220,14 +220,16 @@ bool Direct3DClass::Initialize(int aScreenWidth, int aScreenHeight, bool aVsync,
 
 	myDeviceContext->RSSetState(myRasterState);
 
-	viewport.Width = (float)aScreenWidth;
-	viewport.Height = (float)aScreenHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
+	// Setup the viewport for rendering.
+	myViewport.Width = (float)aScreenWidth;
+	myViewport.Height = (float)aScreenHeight;
+	myViewport.MinDepth = 0.0f;
+	myViewport.MaxDepth = 1.0f;
+	myViewport.TopLeftX = 0.0f;
+	myViewport.TopLeftY = 0.0f;
 
-	myDeviceContext->RSSetViewports(1, &viewport);
+	// Create the viewport.
+	myDeviceContext->RSSetViewports(1, &myViewport);
 
 	fieldOfView = (float)D3DX_PI / 4.0f;
 	screenAspect = (float)aScreenWidth / (float)aScreenHeight;
@@ -388,4 +390,9 @@ void Direct3DClass::SetBackBufferRenderTarget()
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	myDeviceContext->OMSetRenderTargets(1, &myRenderTargetView, myDepthStencilView);
+}
+
+void Direct3DClass::ResetViewport()
+{
+	myDeviceContext->RSSetViewports(1, &myViewport);
 }

@@ -183,5 +183,11 @@
     <None Include="Depth.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shadow.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shadow.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

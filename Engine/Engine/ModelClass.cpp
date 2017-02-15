@@ -333,3 +333,17 @@ void ModelClass::ReleaseModel()
 		myModel = nullptr;
 	}
 }
+
+void ModelClass::SetPosition(float x, float y, float z)
+{
+	m_positionX = x;
+	m_positionY = y;
+	m_positionZ = z;
+}
+
+void ModelClass::GetPosition(float& x, float& y, float& z)
+{
+	x = m_positionX;
+	y = m_positionY;
+	z = m_positionZ;
+}

@@ -19,6 +19,8 @@ public:
 
 	int GetIndexCount();
 	ID3D11ShaderResourceView **GetTextureArray();
+	void SetPosition(float, float, float);
+	void GetPosition(float&, float&, float&);
 
 private:
 	//structure to represent the model format
@@ -75,6 +77,7 @@ private:
 
 	//Hold the model data before it is placed in the vertex buffer.
 	ModelType *myModel;
+	float m_positionX, m_positionY, m_positionZ;
 };
 
 #endif
