@@ -60,8 +60,6 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 
 	mySphere = new ModelClass;
 	modelPath = "../Engine/Models/Sphere.txt";
-	textureColorPath = L"../Engine/Textures/Brick.dds";
-	textureBumpPath = L"../Engine/Textures/BrickBump.dds";
 	result = mySphere->Initialize(myDirect3D->GetDevice(), modelPath, textureColorPath, textureBumpPath);
 	if (!result)
 	{
