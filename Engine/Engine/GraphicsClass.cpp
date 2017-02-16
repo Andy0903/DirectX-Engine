@@ -137,7 +137,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 
 	myGround = new ModelClass;
 	if (!myGround) { return false; }
-	result = myGround->Initialize(myDirect3D->GetDevice(), "../Engine/Models/Floor.txt", L"../Engine/Textures/blue01.dds", L"../Engine/Textures/blue01.dds");
+	result = myGround->Initialize(myDirect3D->GetDevice(), "../Engine/Models/Floor.txt", L"../Engine/Textures/Red.dds", L"../Engine/Textures/Red.dds");
 	if (!result)
 	{
 		MessageBox(aHwnd, L"Could not initialize the floor model object.", L"Error", MB_OK);
@@ -309,6 +309,7 @@ bool GraphicsClass::DragsWithMouse(Direction aDirection)
 	}
 }
 
+int speed = 1;
 bool GraphicsClass::Frame(int aMouseX, int aMouseY, float aDt)
 {
 	bool result;
@@ -317,10 +318,10 @@ bool GraphicsClass::Frame(int aMouseX, int aMouseY, float aDt)
 	HandleInput(aDt);
 
 	// Update the position of the light each frame.
-	lightPositionX += 0.05f;
-	if (lightPositionX > 5.0f)
+	lightPositionX += speed * aDt;
+	if (lightPositionX > 5.0f || lightPositionX < -5.0f)
 	{
-		lightPositionX = -5.0f;
+		speed *= -1;
 	}
 
 	// Update the position of the light.
