@@ -4,19 +4,23 @@ GraphicsClass::GraphicsClass()
 {
 	myDirect3D = nullptr;
 	myCamera = nullptr;
-	myCube = nullptr;
-	//myColorShader = nullptr;
-	myTextureShader = nullptr;
-	//myLightShader = nullptr;
-	myBumpMapShader = nullptr;
-	myLight = nullptr;
 	myPosition = nullptr;
-	//myBitmap = nullptr;
-	//myReflectionShader = nullptr;
-	myRenderTexture = nullptr;
+
+	myCube = nullptr;
 	myGround = nullptr;
+	mySphere = nullptr;
+	myLight = nullptr;
+
+	myRenderTexture = nullptr;
 	myDepthShader = nullptr;
 	myShadowShader = nullptr;
+
+	//myBitmap = nullptr;
+	//myReflectionShader = nullptr;
+	//myColorShader = nullptr;
+	//myTextureShader = nullptr;
+	//myLightShader = nullptr;
+	//myBumpMapShader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& aOther)
@@ -68,43 +72,6 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	}
 	mySphere->SetPosition(2, 2, 0);
 
-	/*myColorShader = new ColorShaderClass;
-	result = myColorShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	if (!result)
-	{
-		MessageBox(aHwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
-		return result;
-	}*/
-
-	myTextureShader = new TextureShaderClass;
-	if (myTextureShader == false)
-	{
-		return false;
-	}
-	result = myTextureShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	if (!result)
-	{
-		MessageBox(aHwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	//myLightShader = new LightShaderClass;
-	//if (!myLightShader) { return false; }
-	//result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	//if (result == false)
-	//{
-	//	MessageBox(aHwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
-	//	return false;
-	//}
-
-	myBumpMapShader = new BumpMapShaderClass;
-	result = myBumpMapShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	if (result == false)
-	{
-		MessageBox(aHwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
-		return false;
-	}
-
 	myLight = new LightClass;
 	if (!myLight) { return false; }
 	myLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
@@ -115,25 +82,9 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	myLight->SetLookAt(0, 0, 0);
 	myLight->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
-	//myBitmap = new BitmapClass;
-	//result = myBitmap->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, L"../Engine/Textures/Red.dds", 256, 256);
-	//if (!result)
-	//{
-	//	MessageBox(aHwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-	//	return false;
-	//}
-
 	myRenderTexture = new RenderTextureClass;
 	result = myRenderTexture->Initialize(myDirect3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) { return false; }
-
-	//myDebugWindow = new DebugWindowClass;
-	//result = myDebugWindow->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, 160, 120);
-	//if (!result)
-	//{
-	//	MessageBox(aHwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
-	//	return false;
-	//}
 
 	myGround = new ModelClass;
 	if (!myGround) { return false; }
@@ -144,17 +95,6 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 		return false;
 	}
 	myGround->SetPosition(0, 1, 0);
-
-	//// Create the reflection shader object.
-	//myReflectionShader = new ReflectionShaderClass;
-	//if (!myReflectionShader) { return false; }
-	//// Initialize the reflection shader object.
-	//result = myReflectionShader->Initialize(myDirect3D->GetDevice(), aHwnd);
-	//if (!result)
-	//{
-	//	MessageBox(aHwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
-	//	return false;
-	//}
 
 	// Create the depth shader object.
 	myDepthShader = new DepthShaderClass;
@@ -180,6 +120,64 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	}
 
 	return true;
+
+	/*myColorShader = new ColorShaderClass;
+	result = myColorShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (!result)
+	{
+	MessageBox(aHwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+	return result;
+	}
+	myTextureShader = new TextureShaderClass;
+	if (myTextureShader == false)
+	{
+		return false;
+	}
+	result = myTextureShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		return false;
+	}
+	myLightShader = new LightShaderClass;
+	if (!myLightShader) { return false; }
+	result = myLightShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (result == false)
+	{
+		MessageBox(aHwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+	myBumpMapShader = new BumpMapShaderClass;
+	result = myBumpMapShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (result == false)
+	{
+		MessageBox(aHwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
+		return false;
+	}
+	myBitmap = new BitmapClass;
+	result = myBitmap->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, L"../Engine/Textures/Red.dds", 256, 256);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+	myDebugWindow = new DebugWindowClass;
+	result = myDebugWindow->Initialize(myDirect3D->GetDevice(), aScreenWidth, aScreenHeight, 160, 120);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
+		return false;
+	}
+	// Create the reflection shader object.
+	myReflectionShader = new ReflectionShaderClass;
+	if (!myReflectionShader) { return false; }
+	// Initialize the reflection shader object.
+	result = myReflectionShader->Initialize(myDirect3D->GetDevice(), aHwnd);
+	if (!result)
+	{
+		MessageBox(aHwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
+		return false;
+	}*/
 }
 
 void GraphicsClass::Shutdown()
@@ -198,13 +196,6 @@ void GraphicsClass::Shutdown()
 		myShadowShader = nullptr;
 	}
 
-	//if (myReflectionShader)
-	//{
-	//	myReflectionShader->Shutdown();
-	//	delete myReflectionShader;
-	//	myReflectionShader = nullptr;
-	//}
-
 	if (myGround)
 	{
 		myGround->Shutdown();
@@ -212,53 +203,11 @@ void GraphicsClass::Shutdown()
 		myGround = nullptr;
 	}
 
-	//if (myColorShader)
-	//{
-	//	myColorShader->Shutdown();
-	//	delete myColorShader;
-	//	myColorShader = nullptr;
-	//}
-
-	if (myTextureShader)
-	{
-		myTextureShader->Shutdown();
-		delete myTextureShader;
-		myTextureShader = nullptr;
-	}
-
-	//if (myDebugWindow)
-	//{
-	//	myDebugWindow->Shutdown();
-	//	delete myDebugWindow;
-	//	myDebugWindow = nullptr;
-	//}
-
 	if (myRenderTexture)
 	{
 		myRenderTexture->Shutdown();
 		delete myRenderTexture;
 		myRenderTexture = nullptr;
-	}
-
-	//if (myLightShader)
-	//{
-	//	myLightShader->Shutdown();
-	//	delete myLightShader;
-	//	myLightShader = nullptr;
-	//}
-
-	//if (myBitmap)
-	//{
-	//	myBitmap->Shutdown();
-	//	delete myBitmap;
-	//	myBitmap = nullptr;
-	//}
-
-	if (myBumpMapShader)
-	{
-		myBumpMapShader->Shutdown();
-		delete myBumpMapShader;
-		myBumpMapShader = nullptr;
 	}
 
 	if (myPosition)
@@ -292,6 +241,49 @@ void GraphicsClass::Shutdown()
 		delete myDirect3D;
 		myDirect3D = nullptr;
 	}
+
+	//if (myLightShader)
+	//{
+	//	myLightShader->Shutdown();
+	//	delete myLightShader;
+	//	myLightShader = nullptr;
+	//}
+	//if (myBitmap)
+	//{
+	//	myBitmap->Shutdown();
+	//	delete myBitmap;
+	//	myBitmap = nullptr;
+	//}
+	//if (myBumpMapShader)
+	//{
+	//	myBumpMapShader->Shutdown();
+	//	delete myBumpMapShader;
+	//	myBumpMapShader = nullptr;
+	//}
+	//if (myReflectionShader)
+	//{
+	//	myReflectionShader->Shutdown();
+	//	delete myReflectionShader;
+	//	myReflectionShader = nullptr;
+	//}
+	//if (myColorShader)
+	//{
+	//	myColorShader->Shutdown();
+	//	delete myColorShader;
+	//	myColorShader = nullptr;
+	//}
+	//if (myTextureShader)
+	//{
+	//	myTextureShader->Shutdown();
+	//	delete myTextureShader;
+	//	myTextureShader = nullptr;
+	//}
+	//if (myDebugWindow)
+	//{
+	//	myDebugWindow->Shutdown();
+	//	delete myDebugWindow;
+	//	myDebugWindow = nullptr;
+	//}
 }
 
 bool GraphicsClass::DragsWithMouse(Direction aDirection)
@@ -309,27 +301,21 @@ bool GraphicsClass::DragsWithMouse(Direction aDirection)
 	}
 }
 
-int speed = 1;
+int LightSpeed = 1;
 bool GraphicsClass::Frame(int aMouseX, int aMouseY, float aDt)
 {
 	bool result;
 	static float lightPositionX = -5.0f;
-
 	HandleInput(aDt);
 
-	// Update the position of the light each frame.
-	lightPositionX += speed * aDt;
+	lightPositionX += LightSpeed * aDt;
 	if (lightPositionX > 5.0f || lightPositionX < -5.0f)
 	{
-		speed *= -1;
+		LightSpeed *= -1;
 	}
-
-	// Update the position of the light.
 	myLight->SetPosition(lightPositionX, 8.0f, -5.0f);
 
-	// Render the graphics scene.
 	result = Render();
-
 	return result;
 }
 
@@ -559,50 +545,36 @@ bool GraphicsClass::RenderSceneToTexture()
 	D3DXMATRIX worldMatrix, lightViewMatrix, lightProjectionMatrix, translateMatrix;
 	float posX, posY, posZ;
 	bool result;
-	// Set the render target to be the render to texture.
+
 	myRenderTexture->SetRenderTarget(myDirect3D->GetDeviceContext());
-	// Clear the render to texture.
 	myRenderTexture->ClearRenderTarget(myDirect3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Generate the light view matrix based on the light's position.
 	myLight->GenerateViewMatrix();
-	// Get the world matrix from the d3d object.
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	// Get the view and orthographic matrices from the light object.
 	myLight->GetViewMatrix(lightViewMatrix);
 	myLight->GetProjectionMatrix(lightProjectionMatrix);
 
-	// Setup the translation matrix for the cube model.
 	myCube->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Render the cube model with the depth shader.
 	myCube->Render(myDirect3D->GetDeviceContext());
 	result = myDepthShader->Render(myDirect3D->GetDeviceContext(), myCube->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
 	if (!result) { return false; }
 
-	// Reset the world matrix.
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	// Setup the translation matrix for the sphere model.
 	mySphere->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Render the sphere model with the depth shader.
 	mySphere->Render(myDirect3D->GetDeviceContext());
 	result = myDepthShader->Render(myDirect3D->GetDeviceContext(), mySphere->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
 	if (!result) { return false; }
 
-	// Reset the world matrix.
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	// Setup the translation matrix for the ground model.
 	myGround->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Render the ground model with the depth shader.
 	myGround->Render(myDirect3D->GetDeviceContext());
 	result = myDepthShader->Render(myDirect3D->GetDeviceContext(), myGround->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
 	if (!result) { return false; }
 
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	myDirect3D->SetBackBufferRenderTarget();
-	// Reset the viewport back to the original.
 	myDirect3D->ResetViewport();
 	return true;
 }
@@ -614,60 +586,44 @@ bool GraphicsClass::Render()
 	bool result;
 	float posX, posY, posZ;
 
-	// First render the scene to a texture.
 	result = RenderSceneToTexture();
 	if (!result) { return false; }
 
-	// Clear the buffers to begin the scene.
 	myDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-	// Generate the view matrix based on the camera's position.
 	myCamera->Render();
-	// Generate the light view matrix based on the light's position.
 	myLight->GenerateViewMatrix();
-	// Get the world, view, and projection matrices from the camera and d3d objects.
 	myCamera->GetViewMatrix(viewMatrix);
 	myDirect3D->GetWorldMatrix(worldMatrix);
 	myDirect3D->GetProjectionMatrix(projectionMatrix);
-	// Get the light's view and projection matrices from the light object.
 	myLight->GetViewMatrix(lightViewMatrix);
 	myLight->GetProjectionMatrix(lightProjectionMatrix);
 
-	// Setup the translation matrix for the cube model.
 	myCube->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Put the cube model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	myCube->Render(myDirect3D->GetDeviceContext());
-	// Render the model using the shadow shader.
 	result = myShadowShader->Render(myDirect3D->GetDeviceContext(), myCube->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix,
 		lightProjectionMatrix, myCube->GetTextureArray()[0], myRenderTexture->GetShaderResourceView(), myLight->GetPosition(),
 		myLight->GetAmbientColor(), myLight->GetDiffuseColor());
 	if (!result) { return false; }
 
-	// Reset the world matrix.
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	// Setup the translation matrix for the sphere model.
 	mySphere->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	mySphere->Render(myDirect3D->GetDeviceContext());
 	result = myShadowShader->Render(myDirect3D->GetDeviceContext(), mySphere->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix,
 		lightProjectionMatrix, mySphere->GetTextureArray()[0], myRenderTexture->GetShaderResourceView(), myLight->GetPosition(),
 		myLight->GetAmbientColor(), myLight->GetDiffuseColor());
 	if (!result) { return false; }
 
-	// Reset the world matrix.
 	myDirect3D->GetWorldMatrix(worldMatrix);
-	// Setup the translation matrix for the ground model.
 	myGround->GetPosition(posX, posY, posZ);
 	D3DXMatrixTranslation(&worldMatrix, posX, posY, posZ);
-	// Render the ground model using the shadow shader.
 	myGround->Render(myDirect3D->GetDeviceContext());
 	result = myShadowShader->Render(myDirect3D->GetDeviceContext(), myGround->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix,
 		lightProjectionMatrix, myGround->GetTextureArray()[0], myRenderTexture->GetShaderResourceView(), myLight->GetPosition(),
 		myLight->GetAmbientColor(), myLight->GetDiffuseColor());
 	if (!result) { return false; }
 
-	// Present the rendered scene to the screen.
 	myDirect3D->EndScene();
 	return true;
 }

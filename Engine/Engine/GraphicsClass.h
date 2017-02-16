@@ -39,7 +39,7 @@ public:
 	bool Render();
 
 private:
-	bool RenderScene();
+	//bool RenderScene();
 	bool RenderSceneToTexture();
 
 	Direct3DClass *myDirect3D;
@@ -47,17 +47,19 @@ private:
 	ModelClass *myCube;
 	ModelClass *mySphere;
 	ModelClass *myGround;
-	//ColorShaderClass *myColorShader;
-	TextureShaderClass *myTextureShader;
-	//LightShaderClass *myLightShader;
-	BumpMapShaderClass *myBumpMapShader;
+
 	LightClass *myLight;
-	//BitmapClass *myBitmap;
 	RenderTextureClass *myRenderTexture;
-	//ReflectionShaderClass *myReflectionShader;
-	//DebugWindowClass *myDebugWindow;
 	DepthShaderClass *myDepthShader;
 	ShadowShaderClass *myShadowShader;
+
+	//ColorShaderClass *myColorShader;
+	//TextureShaderClass *myTextureShader;
+	//LightShaderClass *myLightShader;
+	//BumpMapShaderClass *myBumpMapShader;
+	//ReflectionShaderClass *myReflectionShader;
+	//DebugWindowClass *myDebugWindow;
+	//BitmapClass *myBitmap;
 
 	///FPSMovement
 	enum Direction

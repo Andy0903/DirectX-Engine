@@ -12,16 +12,16 @@ public:
 
 	void SetAmbientColor(float, float, float, float);
 	void SetDiffuseColor(float, float, float, float);
-	void SetDirection(float, float, float);
-	void SetSpecularColor(float, float, float, float);
-	//Lower specularPower = greater effect
-	void SetSpecularPower(float);
+	//void SetDirection(float, float, float);
+	//void SetSpecularColor(float, float, float, float);
+	////Lower specularPower = greater effect
+	//void SetSpecularPower(float);
 
 	D3DXVECTOR4 GetAmbientColor();
 	D3DXVECTOR4 GetDiffuseColor();
-	D3DXVECTOR3 GetDirection();
-	D3DXVECTOR4 GetSpecularColor();
-	float GetSpecularPower();
+	//D3DXVECTOR3 GetDirection();
+	//D3DXVECTOR4 GetSpecularColor();
+	//float GetSpecularPower();
 
 	void SetPosition(float, float, float);
 	void SetLookAt(float, float, float);
@@ -34,14 +34,14 @@ public:
 private:
 	D3DXVECTOR4 myAmbientColor;
 	D3DXVECTOR4 myDiffuseColor;
-	D3DXVECTOR3 myDirection;
-	D3DXVECTOR4 mySpecularColor;
-	float mySpecularPower;
+	//D3DXVECTOR3 myDirection;
+	//D3DXVECTOR4 mySpecularColor;
+	//float mySpecularPower;
 
-	D3DXVECTOR3 m_position;
-	D3DXVECTOR3 m_lookAt;
-	D3DXMATRIX m_viewMatrix;
-	D3DXMATRIX m_projectionMatrix;
+	D3DXVECTOR3 myPosition;
+	D3DXVECTOR3 myLookAt;
+	D3DXMATRIX myViewMatrix;
+	D3DXMATRIX myProjectionMatrix;
 };
 
 #endif 
