@@ -76,9 +76,9 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 	if (!myLight) { return false; }
 	myLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	myLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myLight->SetDirection(0.0f, 0.0f, 1.0f);
-	myLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myLight->SetSpecularPower(32.0f);
+	//myLight->SetDirection(0.0f, 0.0f, 1.0f);
+	//myLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//myLight->SetSpecularPower(32.0f);
 	myLight->SetLookAt(0, 0, 0);
 	myLight->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
