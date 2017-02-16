@@ -42,13 +42,12 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 
 	myCamera = new CameraClass;
 	myCamera->SetPosition(0.0f, 2.0f, -10.0f);
-
 	myPosition = new PositionClass();
 	myPosition->SetPosition(myCamera->GetPosition().x, myCamera->GetPosition().y, myCamera->GetPosition().z);
 
 	myCube = new ModelClass;
 	char* modelPath = "../Engine/Models/Cube.txt";
-	WCHAR* textureColorPath = L"../Engine/Textures/Brick.dds";
+	WCHAR* textureColorPath = L"../Engine/Textures/Blue.dds";
 	WCHAR* textureBumpPath = L"../Engine/Textures/BrickBump.dds";
 	result = myCube->Initialize(myDirect3D->GetDevice(), modelPath, textureColorPath, textureBumpPath);
 	if (!result)
@@ -60,6 +59,7 @@ bool GraphicsClass::Initialize(int aScreenWidth, int aScreenHeight, HWND aHwnd, 
 
 	mySphere = new ModelClass;
 	modelPath = "../Engine/Models/Sphere.txt";
+	textureColorPath = L"../Engine/Textures/Seafloor.dds";
 	result = mySphere->Initialize(myDirect3D->GetDevice(), modelPath, textureColorPath, textureBumpPath);
 	if (!result)
 	{
